@@ -6,7 +6,8 @@ const frameworkModules = {
   '@ember/array': () => import('@ember/array'),
   '@ember/component': () => import('@ember/component'),
   '@ember/component/helper': () => import('@ember/component/helper'),
-  '@ember/component/template-only': () => import('@ember/component/template-only'),
+  '@ember/component/template-only': () =>
+    import('@ember/component/template-only'),
   '@ember/debug': () => import('@ember/debug'),
   '@ember/destroyable': () => import('@ember/destroyable'),
   '@ember/helper': () => import('@ember/helper'),
@@ -32,28 +33,28 @@ const frameworkModules = {
   '@ember/version': () => import('@ember/version'),
   '@glimmer/component': () => import('@glimmer/component'),
   '@glimmer/tracking': () => import('@glimmer/tracking'),
-  '@glimmer/tracking/primitives/cache': () => import('@glimmer/tracking/primitives/cache'),
+  '@glimmer/tracking/primitives/cache': () =>
+    import('@glimmer/tracking/primitives/cache'),
 };
 
 const coreLibraries = {
   'ember-resolver': () => import('ember-resolver'),
   'ember-resources': () => import('ember-resources'),
   'ember-primitives': () => import('ember-primitives'),
-  'repl-sdk': () => import('repl-sdk'),
+  //'repl-sdk': () => import('repl-sdk'),
 };
 
 const emberCompilationModules = {
-  '@ember/template-compiler/runtime': () => import('@ember/template-compiler/runtime'),
+  '@ember/template-compiler/runtime': () =>
+    import('@ember/template-compiler/runtime'),
   '@ember/template-compiler': () => import('@ember/template-compiler/runtime'),
   'ember-source/dist/ember-template-compiler': () =>
     import(
-       
       // @ts-ignore
       'ember-source/dist/ember-template-compiler.js'
     ),
   'ember-source/dist/ember-template-compiler.js': () =>
     import(
-       
       // @ts-ignore
       'ember-source/dist/ember-template-compiler.js'
     ),
@@ -66,7 +67,7 @@ const emberCompilationModules = {
     import('babel-plugin-ember-template-compilation'),
   // Dependencies of the above
   'babel-import-util': () => import('babel-import-util'),
-   
+
   // @ts-ignore
   'babel-plugin-debug-macros': () => import('babel-plugin-debug-macros'),
   '@embroider/macros': () => ({
@@ -101,9 +102,10 @@ const emberCompilationModules = {
       },
     }),
     // Private
-     
+
     // @ts-ignore
-    importSync: (x: string) => window[Symbol.for('__repl-sdk__compiler__')].resolves[x],
+    importSync: (x: string) =>
+      window[Symbol.for('__repl-sdk__compiler__')].resolves[x],
     moduleExists: () => false,
   }),
 };

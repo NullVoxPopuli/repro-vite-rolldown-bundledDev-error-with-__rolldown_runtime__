@@ -1,5 +1,5 @@
 /* eslint-disable getter-return */
- 
+
 // @ts-ignore
 import { tracked } from '@glimmer/tracking';
 import { setComponentTemplate } from '@ember/component';
@@ -14,7 +14,7 @@ import { waitFor } from '@ember/test-waiters';
 
 import { createStore } from 'ember-primitives/store';
 import { resource } from 'ember-resources';
-import { Compiler } from 'repl-sdk';
+//import { Compiler } from 'repl-sdk';
 import { visit } from 'unist-util-visit';
 
 import { nameFor } from '../compile/utils.ts';
@@ -23,12 +23,15 @@ import { modules } from './known-modules.ts';
 import type { CompileResult, ModuleMap } from '../compile/types.ts';
 import type { ComponentLike } from '@glint/template';
 import type { EditorView } from 'codemirror';
-import type { ErrorMessage, InfoMessage, Message } from 'repl-sdk';
+//import type { ErrorMessage, InfoMessage, Message } from 'repl-sdk';
 
 export function getCompiler(context: object) {
   const owner = getOwner(context) ?? context;
 
-  assert(`Missing owner. Cannot use ember-repl's compiler without an owner.`, owner);
+  assert(
+    `Missing owner. Cannot use ember-repl's compiler without an owner.`,
+    owner
+  );
 
   return createStore(owner, CompilerService);
 }
@@ -40,7 +43,10 @@ export function getCompiler(context: object) {
  * The runtime compiler doesn't allow you to catch compiler errors.
  * This particular component doesn't need to be runtime anyway.
  */
-function rendersElement(x: { element: Element; destroy: () => void }): ComponentLike {
+function rendersElement(x: {
+  element: Element;
+  destroy: () => void;
+}): ComponentLike {
   const render = resource(({ on }) => {
     on.cleanup(() => {
       x.destroy();

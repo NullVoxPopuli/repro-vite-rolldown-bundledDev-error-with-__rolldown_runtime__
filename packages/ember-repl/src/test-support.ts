@@ -1,11 +1,8 @@
-import { Compiler } from 'repl-sdk';
-
 import { CACHE } from './compile/compile.ts';
 import { setup } from './setup.ts';
 
 import type { ModuleMap } from './compile/types.ts';
 import type { TestContext } from '@ember/test-helpers';
-import type { Options } from 'repl-sdk';
 
 export function clearCompileCache() {
   CACHE.clear();
