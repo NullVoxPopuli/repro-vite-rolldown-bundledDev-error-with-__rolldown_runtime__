@@ -5,8 +5,6 @@ import { babel } from '@rollup/plugin-babel';
 import { parse as oxcParse } from 'oxc-parser';
 import icons from 'unplugin-icons/vite';
 import { defineConfig } from 'vite';
-import { analyzer } from 'vite-bundle-analyzer';
-import circleDependency from 'vite-plugin-circular-dependency';
 import mkcert from 'vite-plugin-mkcert';
 import { walk } from 'zimmerframe';
 
@@ -253,14 +251,6 @@ export default defineConfig((env) => {
       ],
     },
     plugins: [
-      analyzer({
-        enabled: true,
-        fileName: 'bundle.html',
-        analyzerMode: 'static',
-        openAnalyzer: false,
-        defaultSizes: 'brotli',
-      }),
-      circleDependency(),
       mkcert({
         savePath: 'node_modules/.vite-plugin-mkcert/',
       }),
