@@ -14,16 +14,12 @@ import { waitFor } from '@ember/test-waiters';
 
 import { createStore } from 'ember-primitives/store';
 import { resource } from 'ember-resources';
-//import { Compiler } from 'repl-sdk';
 import { visit } from 'unist-util-visit';
 
-import { nameFor } from '../compile/utils.ts';
 import { modules } from './known-modules.ts';
 
-import type { CompileResult, ModuleMap } from '../compile/types.ts';
 import type { ComponentLike } from '@glint/template';
 import type { EditorView } from 'codemirror';
-//import type { ErrorMessage, InfoMessage, Message } from 'repl-sdk';
 
 export function getCompiler(context: object) {
   const owner = getOwner(context) ?? context;
