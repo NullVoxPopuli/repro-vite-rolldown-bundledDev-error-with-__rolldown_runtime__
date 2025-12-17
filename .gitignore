@@ -1,0 +1,23 @@
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+# compiled output
+dist/
+declarations/
+/tmp/
+/out/
+.log/
+
+# dependencies
+/bower_components/
+node_modules/
+# npm7 workspaces are buggy
+package-lock.json
+
+# misc
+.env*
+.pnp*
+.eslintcache
+.turbo
+npm-debug.log*
+yarn-error.log
+.DS_Store

@@ -1,0 +1,20 @@
+{
+  "extends": [
+    "github>NullVoxPopuli/renovate:js.json5"
+  ],
+  "packageRules": [
+    {
+      // ensure maximum compatibility, when possible
+      "matchPaths": ["packages/ember-repl/addon"],
+      "matchDepTypes": ["dependencies", "peerDependencies", "engines"],
+      "enabled": false
+    },
+    {
+      // test-apps are "minimum compatible",
+      // so that testing problems is more straight forward
+      // as such, deps will be updated manually
+      "matchPaths": ["test-app"],
+      "enabled": false
+    }
+  ]
+}

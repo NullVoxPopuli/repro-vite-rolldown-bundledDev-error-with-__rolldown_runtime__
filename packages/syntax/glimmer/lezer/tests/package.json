@@ -1,0 +1,30 @@
+{
+  "name": "@glimdown/glimmer-tests",
+  "version": "0.0.0",
+  "private": true,
+  "volta": {
+    "extends": "../../../../../package.json"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.5",
+    "@nullvoxpopuli/eslint-configs": "^5.4.0",
+    "eslint": "^9.39.1",
+    "prettier": "^3.7.4",
+    "typescript": "5.9.3"
+  },
+  "scripts": {
+    "lint": "pnpm -w exec lint",
+    "lint:fix": "pnpm -w exec lint fix",
+    "lint:js": "pnpm -w exec lint js",
+    "lint:js:fix": "pnpm -w exec lint js:fix",
+    "lint:prettier:fix": "pnpm -w exec lint prettier:fix",
+    "lint:prettier": "pnpm -w exec lint prettier"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NullVoxPopuli/limber.git",
+    "directory": "packages/syntax/glimmer/codemirror/tests"
+  },
+  "license": "MIT",
+  "author": "NullVoxPopuli"
+}

@@ -1,0 +1,192 @@
+name: CI
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+
+##############################################################
+
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # cancel-in-progress: true
+
+env:
+  codemirror: packages/codemirror/
+  consts: packages/consts/
+  horizon: packages/horizon-theme/
+  monaco: packages/monaco
+  sw: packages/transpilation/
+  NODE_OPTIONS: "--max-old-space-size=4096 --trace-warnings --unhandled-rejections=strict"
+  TURBO_API: http://127.0.0.1:9080
+  TURBO_TOKEN: this-is-not-a-secret
+  TURBO_TEAM: myself
+
+permissions:
+  contents: read
+
+##############################################################
+
+jobs:
+
+##############################################################
+
+  install_dependencies:
+    name: Setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+    - uses: wyvox/action@v1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+    - run:  echo ${{ github.event.number }} > ./pr-number.txt
+    - run: pnpm turbo build --force
+
+  build_tests:
+    name: Build for Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [install_dependencies]
+
+    steps:
+    - uses: wyvox/action@v1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+    - run: pnpm turbo build:test
+
+  build_prod:
+    name: Build for Production
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [install_dependencies]
+
+    steps:
+    - uses: wyvox/action@v1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+    - run:  echo ${{ github.event.number }} > ./pr-number.txt
+    - run: pnpm turbo build:prod
+    - run: ls -la ./apps/repl/dist
+    - run: ls -la ./apps/tutorial/dist
+    # Used for faster deploy so we don't need to checkout the repo
+    - uses: actions/upload-artifact@v4
+      with:
+        name: deploy-prep-dist
+        if-no-files-found: error
+        path: | 
+          ./apps/**/dist/**/*
+          !node_modules/
+          !./**/node_modules/
+
+
+
+##############################################################
+
+  lints:
+    name: "Lints"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [install_dependencies]
+
+    steps:
+      - uses: wyvox/action@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: pnpm build
+      - run: pnpm lint
+
+##############################################################
+
+  tests:
+    name: "Tests"
+    strategy:
+      fail-fast: false
+      matrix:
+        environment:
+        - chrome
+        - firefox
+        - node
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [build_tests]
+
+    steps:
+      - uses: wyvox/action@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Environment Info
+        run: |
+          firefox --version
+          google-chrome --version
+          echo "Node: $( node --version )"
+          echo "NPM: $( npm --version )"
+          echo "pnpm: $( pnpm --version )"
+      - run: pnpm turbo test:${{ matrix.environment }}
+
+
+  # browserstack-test:
+  #   name: Browserstack Tests (Safari, Edge, etc)
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 10
+  #   needs: [tests]
+  #
+  #   steps:
+  #     - uses: wyvox/action@v1
+  #       with:
+  #         repo-token: ${{ secrets.GITHUB_TOKEN }}
+  #     - run: pnpm turbo test:browserstack --log-order stream --output-logs=new-only
+  #       env:
+  #         # This is a guest user on an open source plan.
+  #         # (limited access, etc etc)
+  #         #
+  #         # Exposing this key is the only way to reasonably 
+  #         # have browserstack run on PRs from forks
+  #         BROWSERSTACK_ACCESS_KEY: km7yCVefUQDSdFMF9o64
+  #         BROWSERSTACK_USERNAME: glimdown_6vzpNh
+
+##############################################################
+##############################################################
+#
+# These jobs won't run on pull requests.
+# They would fail anyway because secrets are not exposed.
+#
+##############################################################
+##############################################################
+
+  # NOTE: this is basically the same code as in DeployPreview
+  DeployProduction:
+    name: "Deploy: Production ${{ matrix.app.name }}"
+    if: github.ref == 'refs/heads/main' 
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: 
+      # - browserstack-test
+      - build_prod
+
+    strategy: 
+      matrix:
+        app: 
+        - { path: "./tutorial/dist", cloudflareName: "limber-glimmer-tutorial", name: "tutorial" }
+        - { path: "./repl/dist", cloudflareName: "limber-glimdown", name: "limber" }
+          
+    permissions:
+      contents: read
+      deployments: write
+    outputs:
+      limberUrl: ${{ steps.limber.outputs.url }}
+      tutorialUrl: ${{ steps.tutorial.outputs.url }}
+    steps:
+      - uses: actions/download-artifact@v4
+        name: deploy-prep-dist
+      - name: Publish ${{ matrix.app.name }}
+        working-directory: ./deploy-prep-dist/${{ matrix.app.path }}
+        run: |
+          npx wrangler pages deploy ./ \
+            --project-name=${{ matrix.app.cloudflareName }} \
+            --branch=${{ github.event.workflow_run.head_branch }} \
+            --commit-hash=${{ github.event.workflow_run.head_sha }}
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

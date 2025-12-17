@@ -1,0 +1,39 @@
+{
+  "name": "@nullvoxpopuli/horizon-theme",
+  "version": "0.0.1",
+  "description": "horizon variables for the limber editors and other JS-based theming",
+  "main": "dist/index.js",
+  "type": "module",
+  "types": "dist/types.d.ts",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "pnpm tsc",
+    "dev": "pnpm tsc --watch",
+    "lint:types": "pnpm tsc --noEmit",
+    "lint:fix": "pnpm -w exec lint fix",
+    "lint": "pnpm -w exec lint",
+    "lint:js": "pnpm -w exec lint js",
+    "lint:js:fix": "pnpm -w exec lint js:fix",
+    "lint:prettier:fix": "pnpm -w exec lint prettier:fix",
+    "lint:prettier": "pnpm -w exec lint prettier"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.5",
+    "@nullvoxpopuli/eslint-configs": "^5.4.0",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.1",
+    "prettier": "^3.7.4",
+    "prettier-plugin-ember-template-tag": "2.1.2",
+    "typescript": "5.9.3"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NullVoxPopuli/limber.git",
+    "directory": "packages/horizon-theme"
+  },
+  "author": "NullVoxPopuli"
+}

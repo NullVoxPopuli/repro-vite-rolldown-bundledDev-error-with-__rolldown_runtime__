@@ -1,0 +1,86 @@
+{
+  "name": "limber-monorepo",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:NullVoxPopuli/limber.git"
+  },
+  "author": "NullVoxPopuli",
+  "scripts": {
+    "build": "turbo build --filter=limber^... --concurrency $(nproc --all)",
+    "dev": "node ./dev/index.js",
+    "lint": "turbo _:lint --concurrency $(nproc --all)",
+    "lint:fix": "turbo _:lint:fix --concurrency $(nproc --all)",
+    "prepare": "pnpm build",
+    "start": "pnpm build && concurrently 'npm:start:repl' 'npm:start:styles' --names 'tutarial,repl,tailwind'",
+    "start:repl": "pnpm --filter=limber start",
+    "start:styles": "pnpm --filter=limber-styles start"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.5",
+    "@babel/standalone": "file:./babel-standalone.tgz",
+    "@glint/ember-tsc": "^1.0.8",
+    "@glint/tsserver-plugin": "^2.0.8",
+    "@nullvoxpopuli/eslint-configs": "^5.4.0",
+    "concurrently": "^9.2.1",
+    "ember-template-lint": "^7.9.3",
+    "eslint": "^9.39.1",
+    "prettier": "^3.7.4",
+    "prettier-plugin-ember-template-tag": "2.1.2",
+    "prettier-plugin-tailwindcss": "^0.7.2",
+    "release-plan": "^0.17.2",
+    "turbo": "^2.6.3"
+  },
+  "packageManager": "pnpm@10.25.0",
+  "engines": {
+    "node": ">= 24.12"
+  },
+  "volta": {
+    "node": "24.12.0",
+    "pnpm": "10.25.0"
+  },
+  "pnpm": {
+    "_repl-sdk": "workspace:*",
+    "_ember-repl": "workspace:*",
+    "overrides": {
+      "@babel/standalone": "file:./babel-standalone.tgz",
+      "decorator-transforms": "2.3.0",
+      "array-includes": "npm:@nolyfill/array-includes@^1",
+      "array.prototype.findlastindex": "npm:@nolyfill/array.prototype.findlastindex@^1",
+      "array.prototype.flat": "npm:@nolyfill/array.prototype.flat@^1",
+      "array.prototype.flatmap": "npm:@nolyfill/array.prototype.flatmap@^1",
+      "assert": "npm:@nolyfill/assert@^1",
+      "hasown": "npm:@nolyfill/hasown@^1",
+      "is-core-module": "npm:@nolyfill/is-core-module@^1",
+      "isarray": "npm:@nolyfill/isarray@^1",
+      "json-stable-stringify": "npm:@nolyfill/json-stable-stringify@^1",
+      "object.fromentries": "npm:@nolyfill/object.fromentries@^1",
+      "object.groupby": "npm:@nolyfill/object.groupby@^1",
+      "object.values": "npm:@nolyfill/object.values@^1",
+      "side-channel": "npm:@nolyfill/side-channel@^1",
+      "string.prototype.matchall": "npm:@nolyfill/string.prototype.matchall@^1",
+      "string.prototype.trimend": "npm:@nolyfill/string.prototype.trimend@^1"
+    },
+    "allowedDeprecatedVersions": {
+      "source-map-url": "^0.3.0",
+      "core-js": "^2.0.0"
+    },
+    "peerDependencyRules": {
+      "allowAny": [
+        "@glimmer/component",
+        "ember-modifier",
+        "typescript",
+        "ember-source"
+      ],
+      "ignoreMissing": [
+        "rollup",
+        "rsvp"
+      ]
+    },
+    "patchedDependencies": {
+      "browserslist-generator": "patches/browserslist-generator.patch",
+      "ember-source": "patches/ember-source.patch",
+      "decorator-transforms": "patches/decorator-transforms.patch"
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "name": "@glimdown/codemirror-dev-preview",
+  "private": true,
+  "version": "0.0.1",
+  "exports": {
+    "./print-tree": "./src/print-lezer-tree.ts"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.5",
+    "@nullvoxpopuli/eslint-configs": "^5.4.0",
+    "eslint": "^9.39.1",
+    "prettier": "^3.7.4",
+    "typescript": "5.9.3"
+  },
+  "scripts": {
+    "lint": "pnpm -w exec lint",
+    "lint:fix": "pnpm -w exec lint fix",
+    "lint:prettier:fix": "pnpm -w exec lint prettier:fix",
+    "lint:prettier": "pnpm -w exec lint prettier"
+  },
+  "dependencies": {
+    "@codemirror/state": "^6.5.2",
+    "@lezer/common": "^1.2.3"
+  },
+  "volta": {
+    "extends": "../../../package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NullVoxPopuli/limber.git",
+    "directory": "packages/syntax/dev-preview"
+  },
+  "engines": {
+    "node": ">= v16",
+    "npm": "use pnpm",
+    "yarn": "use pnpm"
+  },
+  "license": "MIT",
+  "author": "NullVoxPopuli"
+}

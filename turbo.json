@@ -1,0 +1,146 @@
+/////////////////////////////////////////////////////
+/////////////////////////////////////////////////////
+//
+//  NOTE on convention:
+//    script names starting with "_:" do so because 
+//    they are not intended to be invoked by humans
+//    turborepo will invoke these scripts, freeing
+//    up the more human-readable script names for 
+//    running by humans.
+// 
+//    This helps reduce the possibility of accidental
+//    cycles in script dependencies and invocation.
+//
+//    One way to think about this is to ask a question:
+//      
+//        Is the script and endpoint command? 
+//          as in, it's not a meta-script or script-running script?
+//        
+//        If the script is an endpoint command, 
+//          the _: prefix is not needed.
+//  
+//        Otherwise, the _: is needed, because the local / 
+//        package-specific script would be in conflict.
+//        (We want to avoid having turbo call scripts that call turbo)
+//
+/////////////////////////////////////////////////////
+/////////////////////////////////////////////////////
+{
+  "globalDependencies": [".prettierrc.cjs", ".prettierignore", "pnpm-lock.yaml", ".npmrc"],
+  "tasks": {
+    /////////////////////////////////////////////////
+    /////////////////////////////////////////////////
+    //
+    //         Local Dev
+    //
+    /////////////////////////////////////////////////
+    /////////////////////////////////////////////////
+    "dev": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "persistent": true
+    },
+    "start": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "persistent": true
+    },
+
+    /////////////////////////////////////////////////
+    /////////////////////////////////////////////////
+    //
+    //         C.I. / C.D.
+    //
+    /////////////////////////////////////////////////
+    /////////////////////////////////////////////////
+    "pack": {
+      "outputs": ["*.tgz"],
+      "dependsOn": ["build"]
+    },
+    "build:prod": { "outputs": ["dist/**"], "dependsOn": ["^build"] },
+    "build:test": { "outputs": ["dist/**"], "dependsOn": ["^build"] },
+    "build": {
+      "outputs": ["dist/**", "declarations/**"],
+      "dependsOn": ["^build"]
+    },
+    "test:node": {
+      "outputs": [],
+      "dependsOn": ["^build", "build:test"]
+    },
+    "test:firefox": {
+      "outputs": [],
+      "dependsOn": ["^build", "build:test"]
+    },
+    "test:chrome": {
+      "outputs": [],
+      "dependsOn": ["^build", "build:test"]
+    },
+    // Apps will have test:ember and test:browserstack
+    // They are separate so that they can cache independently
+    // and provide more variability than just "test"
+    "test:ember": {
+      "env": [
+        "CI_BROWSER", 
+        "EMBER_TRY_CURRENT_SCENARIO", 
+        "EMBROIDER_TEST_SETUP_OPTIONS"
+      ],
+      "dependsOn": ["^build", "build:test"]
+    },
+    "test:browserstack": {
+      "dependsOn": ["^build"],
+      // see: https://github.com/kategengler/ember-cli-browserstack/blob/b199b19d0fe279fb0dcec13e76985c4492c591d8/lib/utils/build-name-from-env.js#L51
+      "passThroughEnv": [
+        "BROWSERSTACK_USERNAME", 
+        "BROWSERSTACK_ACCESS_KEY", 
+        "BROWSERSTACK_LOCAL_IDENTIFIER",
+        "BROWSERSTACK_BUILD_NAME",
+        "BROWSERSTACK_BUILD_NAME_PREFIX",
+        "GITHUB_RUN_ID",
+        "GITHUB_WORKFLOW",
+        "GITHUB_REF",
+        "GITHUB_HEAD_REF",
+        "GITHUB_RUN_NUMBER",
+        "GITHUB_JOB",
+        "CI"
+      ]
+    },
+    // All scenarios
+    "test:scenarios": {
+      "dependsOn": ["^build"]
+    },
+
+    /////////////////////////////////////////////////
+    /////////////////////////////////////////////////
+    //
+    //         Quality Checks
+    //
+    /////////////////////////////////////////////////
+    /////////////////////////////////////////////////
+    "_:lint": {
+      "outputs": [],
+      "dependsOn": [
+        "lint:js",
+        "lint:hbs",
+        "lint:prettier",
+        "lint:types",
+        "lint:package",
+        "lint:published-types"
+      ]
+    },
+    "lint:js": { "outputs": [], "dependsOn": ["^build"] },
+    "lint:hbs": { "outputs": [] },
+    "lint:prettier": { "outputs": [] },
+    "lint:types": { "outputs": [], "dependsOn": ["^build"] },
+    "lint:package": { "outputs": [], "dependsOn": ["build"] },
+    "lint:published-types": { "outputs": [], "dependsOn": ["pack"] },
+
+    "_:lint:fix": {
+      "dependsOn": ["lint:js:fix", "lint:prettier:fix", "lint:hbs:fix"]
+    },
+    "lint:js:fix": { "outputs": [], "dependsOn": ["^build"] },
+    "lint:hbs:fix": { "outputs": [] },
+    // Prettier can alter files too, so let's prevent race conditions for multiple
+    // writing to the same files.
+    "lint:prettier:fix": { "outputs": [], "dependsOn": ["lint:js:fix", "lint:hbs:fix"] }
+  }
+}

@@ -1,0 +1,66 @@
+.limber__editor {
+  position: relative;
+
+  .limber__editor__tab-help {
+    position: absolute;
+    bottom: 0.25rem;
+    right: 0;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1;
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.125rem 1rem;
+    text-shadow: 0 1px 2px black;
+    kbd {
+      text-shadow: none;
+    }
+  }
+
+  .limber__editor__codemirror {
+    width: 100%;
+    height: 100%;
+  }
+
+  &:has(.cm-focused) {
+    .limber__editor__tab-help {
+      opacity: 1;
+    }
+  }
+}
+
+.limber__editor__pending {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  background: var(--code-bg);
+  overflow: hidden;
+  border: 1px solid oklch(21% 0.034 264.665);
+  width: 100%;
+  height: 100%;
+}
+
+.limber__editor__click-to-edit {
+  position: absolute;
+  inset: 0;
+  text-align: center;
+  color: white;
+  background: rgba(0,0,0,0.5);
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  &:hover, &:focus-visible {
+    background: rgba(0,0,0,0.35);
+  }
+}
+
+@media (pointer:coarse) {
+  .limber__editor .limber__editor__tab-help {
+    /**
+     * Touch devices don't usually use keyboards
+     */
+    display: none !important;
+  }
+}
+
