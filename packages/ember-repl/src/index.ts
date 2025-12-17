@@ -1,1 +1,120 @@
-export { getCompiler } from './services/compiler.ts';
+const frameworkModules = {
+  '@ember/application': () => import('@ember/application'),
+  '@ember/application/instance': () => import('@ember/application/instance'),
+  '@ember/array': () => import('@ember/array'),
+  '@ember/component': () => import('@ember/component'),
+  '@ember/component/helper': () => import('@ember/component/helper'),
+  '@ember/component/template-only': () =>
+    import('@ember/component/template-only'),
+  '@ember/debug': () => import('@ember/debug'),
+  '@ember/destroyable': () => import('@ember/destroyable'),
+  '@ember/helper': () => import('@ember/helper'),
+  '@ember/modifier': () => import('@ember/modifier'),
+  '@ember/object': () => import('@ember/object'),
+  '@ember/object/observers': () => import('@ember/object/observers'),
+  '@ember/owner': () => import('@ember/owner'),
+  '@ember/reactive': () => import('@ember/reactive'),
+  '@ember/reactive/collections': () => import('@ember/reactive/collections'),
+  '@ember/renderer': () => import('@ember/renderer'),
+  '@ember/routing': () => import('@ember/routing'),
+  '@ember/routing/route': () => import('@ember/routing/route'),
+  '@ember/routing/router': () => import('@ember/routing/router'),
+  '@ember/runloop': () => import('@ember/runloop'),
+  '@ember/service': () => import('@ember/service'),
+  '@ember/template': () => import('@ember/template'),
+  '@ember/template-compilation': () => import('@ember/template-compilation'),
+  '@ember/template-factory': () => import('@ember/template-factory'),
+  '@ember/test-helpers': () => import('@ember/test-helpers'),
+  '@ember/test-waiters': () => import('@ember/test-waiters'),
+  '@ember/test': () => import('@ember/test'),
+  '@ember/utils': () => import('@ember/utils'),
+  '@ember/version': () => import('@ember/version'),
+  '@glimmer/component': () => import('@glimmer/component'),
+  '@glimmer/tracking': () => import('@glimmer/tracking'),
+  '@glimmer/tracking/primitives/cache': () =>
+    import('@glimmer/tracking/primitives/cache'),
+};
+
+const coreLibraries = {
+  'ember-resolver': () => import('ember-resolver'),
+  'ember-resources': () => import('ember-resources'),
+  'ember-primitives': () => import('ember-primitives'),
+  //'repl-sdk': () => import('repl-sdk'),
+};
+
+const emberCompilationModules = {
+  '@ember/template-compiler/runtime': () =>
+    import('@ember/template-compiler/runtime'),
+  '@ember/template-compiler': () => import('@ember/template-compiler/runtime'),
+  'ember-source/dist/ember-template-compiler': () =>
+    import(
+      // @ts-ignore
+      'ember-source/dist/ember-template-compiler.js'
+    ),
+  'ember-source/dist/ember-template-compiler.js': () =>
+    import(
+      // @ts-ignore
+      'ember-source/dist/ember-template-compiler.js'
+    ),
+  // Direct Dependencies
+  '@babel/standalone': () => import('@babel/standalone'),
+  'content-tag': () => import('content-tag'),
+  'decorator-transforms': () => import('decorator-transforms'),
+  'decorator-transforms/runtime': () => import('decorator-transforms/runtime'),
+  'babel-plugin-ember-template-compilation': () =>
+    import('babel-plugin-ember-template-compilation'),
+  // Dependencies of the above
+  'babel-import-util': () => import('babel-import-util'),
+
+  // @ts-ignore
+  'babel-plugin-debug-macros': () => import('babel-plugin-debug-macros'),
+  '@embroider/macros': () => ({
+    // passthrough, we are not doing dead-code-elimination
+    macroCondition: (x: boolean) => x,
+    // I *could* actually implement this
+    dependencySatisfies: () => true,
+    isDevelopingApp: () => true,
+    // Trying to use warp-drive in a REPL environment may be impossible, since they
+    // encourage choosing your own adventure without a buildless recommended path.
+    // The use of nested configs (specifically env) is also problematic for
+    // "falling back to false" as what all other macros-using libraries use.
+    //   (many of us have seen "Cannot access DEBUG on undefined" in build errors)
+    // Even with this config, I have not successfully been able to use warp-drive
+    // in any of my REPL-based projects.
+    //
+    // (Its also perfectly fine for warp-drive to decide they don't care about the same things I do)
+    getGlobalConfig: () => ({
+      WarpDrive: {
+        debug: false,
+        env: {
+          DEBUG: false,
+          TESTING: false,
+          PRODUCTION: true,
+        },
+        activeLogging: false,
+        compatWith: '99.0',
+        features: {},
+        deprecations: {},
+        polyfillUUID: false,
+        includeDataAdapter: false,
+      },
+    }),
+    // Private
+
+    // @ts-ignore
+    importSync: (x: string) =>
+      window[Symbol.for('__repl-sdk__compiler__')].resolves[x],
+    moduleExists: () => false,
+  }),
+};
+
+/**
+ * If any real packages are defined here, they would fallback to fetching from NPM
+ * instead of loading from this pre-made bundle.
+ */
+export const modules = (extraModules: ModuleMap): ModuleMap => ({
+  ...coreLibraries,
+  ...frameworkModules,
+  ...extraModules,
+  ...emberCompilationModules,
+});

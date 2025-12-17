@@ -1,7 +1,7 @@
 // an in-monorepo dependency
-import { getCompiler } from 'ember-repl';
+import * as repl from 'ember-repl';
 
-console.log(getCompiler);
+console.log(repl);
 
 import Application from 'ember-strict-application-resolver';
 
