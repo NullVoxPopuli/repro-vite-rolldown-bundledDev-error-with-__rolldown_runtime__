@@ -33,12 +33,7 @@ function bundle(name: string, loader: () => Promise<{ default: unknown }>[]) {
 }
 
 (window as any)._embroiderRouteBundles_ = [
-  bundle('docs', () => [import('./templates/docs.gts')]),
-  bundle('docs.index', () => [import('./templates/docs/index.gts')]),
-  bundle('docs.repl-sdk', () => [import('./templates/docs/repl-sdk.gts')]),
-  bundle('docs.ember-repl', () => [import('./templates/docs/ember-repl.gts')]),
-  bundle('docs.embedding', () => [import('./templates/docs/embedding.gts')]),
-  bundle('docs.editor', () => [import('./templates/docs/editor.gts')]),
+  // omitted for repro
 ];
 
 Router.map(function () {
@@ -46,19 +41,4 @@ Router.map(function () {
    * The main editing UI is here
    */
   this.route('edit');
-
-  /**
-   * These top-level views are only meaningful via iframe
-   * or very carefully crafted URLS
-   */
-  this.route('ember');
-  this.route('output');
-  this.route('docs', function () {
-    this.route('repl-sdk');
-    this.route('ember-repl');
-    this.route('embedding');
-    this.route('editor');
-  });
-
-  this.route('error-404', { path: '*' });
 });
