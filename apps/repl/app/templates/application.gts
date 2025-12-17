@@ -1,7 +1,6 @@
-import { PortalTargets } from 'ember-primitives/components/portal-targets';
+// an in-monorepo dependency
+import { getCompiler } from 'ember-repl';
 
-<template>
-  <PortalTargets />
+console.log(getCompiler);
 
-  {{outlet}}
-</template>
+<template>hello there (check console)</template>
