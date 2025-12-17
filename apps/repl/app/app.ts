@@ -26,9 +26,9 @@ export default class App extends Application {
   inspector = setupInspector(this);
   modules = {
     './router': Router,
-    ...import.meta.glob('./routes/{edit,index,application,error-404}.ts', { eager: true }),
-    ...import.meta.glob('./services/{editor,status}.ts', { eager: true }),
-    ...import.meta.glob('./controllers/*.ts', { eager: true }),
+    // ...import.meta.glob('./routes/{edit,index,application,error-404}.ts', { eager: true }),
+    //    ...import.meta.glob('./services/{editor,status}.ts', { eager: true }),
+    //   ...import.meta.glob('./controllers/*.ts', { eager: true }),
     ...import.meta.glob('./templates/{application,edit,output,error-404}.gts', {
       eager: true,
     }),
